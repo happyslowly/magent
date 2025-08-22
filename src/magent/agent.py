@@ -23,6 +23,7 @@ class Agent:
         )
         self.threads = defaultdict(list)
         self._default_thread_id: Literal["default"] = "default"
+        self.threads[self._default_thread_id] = []
         self.tools = tools
         self._tool_map = {t.__name__: t for t in self.tools}
 
@@ -31,8 +32,9 @@ class Agent:
             [self.system_message] if self.system_message else []
         )
         human_message = HumanMessage(content=prompt)
-        if thread_id and thread_id in self.threads:
-            input_messages.extend(self.threads[thread_id])
+        if thread_id and thread_id not in self.threads:
+            raise ValueError(f"Thread id `{thread_id}` not found")
+        input_messages.extend(self.threads[thread_id or self._default_thread_id])
         input_messages.append(human_message)
         tool_schemas = self._get_tool_schemas()
 
@@ -48,11 +50,10 @@ class Agent:
             else:
                 break
 
-        if output_message:
-            self._save_messages(
-                thread_id or self._default_thread_id,
-                input_messages[1:] + [output_message],
-            )
+        self._save_messages(
+            thread_id or self._default_thread_id,
+            input_messages[1:] + ([output_message] if output_message else []),
+        )
 
         return output_message
 

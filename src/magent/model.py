@@ -17,15 +17,17 @@ class OpenAIModel:
         self.chat_url = f"{self.provider.base_url}/chat/completions"
 
     async def invoke(self, messages: list[Message], **kwargs) -> Message | None:
+        headers = {}
+        if self.provider.api_key:
+            headers["Authorization"] = f"Bearer {self.provider.api_key}"
         async with httpx.AsyncClient() as client:
             body = {
                 "model": self.model_name,
                 "messages": [m.model_dump() for m in messages],
                 "tools": kwargs.get("tools", []),
             }
-            logger.debug(body)
             try:
-                response = await client.post(self.chat_url, json=body)
+                response = await client.post(self.chat_url, json=body, headers=headers)
                 response.raise_for_status()
                 response_data = response.json()
                 choice = response_data["choices"][0]

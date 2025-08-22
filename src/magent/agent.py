@@ -66,6 +66,7 @@ class Agent:
         messages = self._get_all_messages(thread_id or self._default_thread_id)
         if json:
             return _json.dumps([m.model_dump() for m in messages])
+        return messages
 
     def _get_all_messages(self, thread_id: UUID | Literal["default"]):
         history = self.threads.get(thread_id)

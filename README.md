@@ -34,7 +34,13 @@ agent = Agent(
 
 # Use the agent
 response = await agent.invoke("I guess 5")
-# response:
-# ModelMessage(role="assistant" content="Sorry, but your guess of 5 is incorrect. The dice rolled a 3. Would you like to try again?\n")
+print(response)
+# ModelMessage(role="The dice roll result is 4. You guessed 5, which was quite close! Would you like to play again?")
+print(agent.get_all_messages())
+# [SystemMessage(role='system', content='Play a number guessing game'),
+#  HumanMessage(role='user', content='I guess 5'),
+#  ToolCallMessage(role='assistant', content=None, tool_calls=[{'id': 'call_l1hkY7onoxdJGPfMzHByT8O9', 'type': 'function', 'function': {'name': 'roll_dice', 'arguments': '{}'}}]),
+#  ToolMessage(role='tool', content='4', tool_call_id='call_l1hkY7onoxdJGPfMzHByT8O9'),
+#  ModelMessage(role='assistant', content='The dice roll result is 4. You guessed 5, which was quite close! Would you like to play again?')]
 ```
 
